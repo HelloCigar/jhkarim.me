@@ -33,7 +33,6 @@ import { Switch } from '~/components/ui/switch'
 import { toastManager } from '~/components/ui/toast'
 import { pickImage, uploadImage } from '~/lib/upload'
 import { InertiaProps } from '~/types'
-import string from '@adonisjs/core/helpers/string'
 
 type PageProps = InertiaProps<{ article: Data.Article | null }>
 
@@ -51,7 +50,15 @@ export const hello = 'world'
 `
 
 function slugify(value: string) {
-  return string.slug(value)
+  return value
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 function ToolbarButton({ title, ...props }: React.ComponentProps<typeof Button>) {
@@ -255,8 +262,8 @@ export default function ArticleEditor({ article }: PageProps) {
     : ({ route: 'articles.store' } as const)
 
   return (
-    // Desktop is a locked app-like split view; on smaller screens the page
-    // scrolls normally so the editor and preview each get real height.
+    {/* Desktop is a locked app-like split view; on smaller screens the page
+        scrolls normally so the editor and preview each get real height. */}
     <Form {...formProps} className="flex min-h-dvh flex-col gap-0 lg:h-dvh">
       {({ processing }) => (
         <>
@@ -458,7 +465,7 @@ export default function ArticleEditor({ article }: PageProps) {
                 onChange={(e) => setContent(e.target.value)}
                 onKeyDown={onEditorKeyDown}
                 spellCheck={false}
-                className="min-h-[60dvh] flex-1 resize-none bg-base p-4 font-mono text-13px leading-relaxed color-base outline-none placeholder:color-faint lg:min-h-0"
+                className="min-h-0 flex-1 resize-none bg-base p-4 font-mono text-13px leading-relaxed color-base outline-none placeholder:color-faint"
                 placeholder="Write your article in markdown..."
               />
             </div>
