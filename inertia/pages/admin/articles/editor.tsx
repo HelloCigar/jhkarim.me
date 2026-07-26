@@ -261,9 +261,9 @@ export default function ArticleEditor({ article }: PageProps) {
     ? ({ route: 'articles.update', routeParams: { id: article.id } } as const)
     : ({ route: 'articles.store' } as const)
 
+  // Desktop is a locked app-like split view; on smaller screens the page
+  // scrolls normally so the editor and preview each get real height.
   return (
-    {/* Desktop is a locked app-like split view; on smaller screens the page
-        scrolls normally so the editor and preview each get real height. */}
     <Form {...formProps} className="flex min-h-dvh flex-col gap-0 lg:h-dvh">
       {({ processing }) => (
         <>
