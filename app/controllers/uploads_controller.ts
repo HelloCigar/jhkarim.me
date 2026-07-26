@@ -47,9 +47,8 @@ export default class UploadsController {
     const { image } = await request.validateUsing(imageUploadValidator)
 
     const key = `${string.uuid()}.${image.extname}`
-    const disk = drive.use()
-    await disk.moveFromFs(image.tmpPath!, key)
+    await image.moveToDisk(key)
 
-    return response.json({ url: await disk.getUrl(key) })
+    return response.json({ url: await drive.use().getUrl(key) })
   }
 }
