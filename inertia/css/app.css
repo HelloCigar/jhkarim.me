@@ -1,0 +1,222 @@
+/**
+ * Project styles on top of the @antfu/design tokens.
+ * `--at-apply` directives are expanded by @unocss/transformer-directives.
+ */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: currentColor;
+  transition: background-color 5000000s ease-in-out 0s;
+}
+
+/**
+ * Prose styling for rendered Comark article content.
+ */
+.article-prose {
+  --at-apply: 'color-base leading-relaxed break-words';
+}
+
+.article-prose h1 {
+  --at-apply: 'mt-8 mb-4 text-3xl font-semibold';
+}
+
+.article-prose h2 {
+  --at-apply: 'mt-8 mb-3 text-2xl font-semibold';
+}
+
+.article-prose h3 {
+  --at-apply: 'mt-6 mb-2 text-xl font-medium';
+}
+
+.article-prose h4 {
+  --at-apply: 'mt-5 mb-2 text-lg font-medium';
+}
+
+.article-prose p {
+  --at-apply: 'my-4';
+}
+
+.article-prose ul {
+  --at-apply: 'my-4 list-disc pl-6';
+}
+
+.article-prose ol {
+  --at-apply: 'my-4 list-decimal pl-6';
+}
+
+.article-prose li {
+  --at-apply: 'my-1';
+}
+
+.article-prose a {
+  --at-apply: 'underline underline-offset-4 hover:color-active';
+}
+
+.article-prose blockquote {
+  --at-apply: 'my-4 border-l-3 border-base pl-4 color-muted italic';
+}
+
+.article-prose hr {
+  --at-apply: 'my-8 border-base';
+}
+
+.article-prose img {
+  --at-apply: 'max-w-full rounded-lg';
+}
+
+/* `block` lets a wide table scroll inside the column instead of
+   widening the whole page on narrow screens. */
+.article-prose table {
+  --at-apply: 'my-4 block w-full overflow-x-auto border-collapse text-sm';
+}
+
+.article-prose th,
+.article-prose td {
+  --at-apply: 'border border-base px-3 py-1.5 text-left';
+}
+
+.article-prose code:not(pre code) {
+  --at-apply: 'rounded bg-secondary px-1.5 py-0.5 font-mono text-0.85em';
+}
+
+/**
+ * Shiki dual-theme support: the highlight plugin emits inline colors
+ * for the light theme plus --shiki-dark variables for dark mode.
+ */
+html.dark .article-prose .code-snippet span[style] {
+  color: var(--shiki-dark, inherit);
+}
+
+/**
+ * Tooltips rendered by globe.gl on the globe page. They sit over the globe
+ * texture, which swaps with the theme, so they follow the theme tokens too.
+ */
+/*
+ * globe.gl builds its tooltip inside a float-tooltip container that brings its
+ * own dark background, padding and radius - which framed the card below rather
+ * than letting it be the whole tooltip. The doubled class beats the library's
+ * own single-class rule whichever order the styles end up in. Written as plain
+ * CSS on purpose: `bg-transparent`-style shortcuts can compile to nothing here.
+ */
+.float-tooltip-kap.float-tooltip-kap {
+  padding: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+/*
+ * globe.gl gives its tooltip container a dark background of its own, so this
+ * card has to be opaque - `bg-base/85` compiles to nothing here (the alpha
+ * modifier is dropped on the semantic shortcut), which left the card
+ * transparent and its dark text sitting on that dark container.
+ */
+.globe-tooltip {
+  --at-apply: 'w-56 overflow-hidden rounded-lg border border-base bg-base color-base';
+}
+
+/* One dot can carry several articles, so entries stack inside a single card. */
+.globe-tooltip-entry + .globe-tooltip-entry {
+  --at-apply: 'border-t border-base';
+}
+
+.globe-tooltip-more {
+  --at-apply: 'border-t border-base px-3 py-1.5 text-xs color-faint';
+}
+
+.globe-tooltip img {
+  --at-apply: 'h-28 w-full object-cover';
+}
+
+.globe-tooltip-title {
+  --at-apply: 'px-3 pt-2 text-sm font-medium color-base';
+}
+
+.globe-tooltip-location {
+  --at-apply: 'px-3 pt-0.5 text-xs color-muted';
+}
+
+.globe-tooltip-date {
+  --at-apply: 'px-3 pb-2 pt-0.5 font-mono tabular-nums text-xs color-faint';
+}
+
+/**
+ * Continuous "draw the signature" loop for the jhkarim logo. The dash length
+ * is set at runtime (Logo component) to match the real glyph outline length;
+ * the fallback below only covers the brief pre-hydration render.
+ */
+.signature-text {
+  stroke-dasharray: var(--signature-length, 1000);
+  animation:
+    signature-fade 6s ease-in-out infinite,
+    signature-draw 6s ease-in-out infinite,
+    signature-ink 6s ease-in-out infinite;
+}
+
+@keyframes signature-fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  8%,
+  88% {
+    opacity: 1;
+  }
+}
+
+@keyframes signature-draw {
+  0% {
+    stroke-dashoffset: var(--signature-length, 1000);
+  }
+  50%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes signature-ink {
+  0%,
+  50% {
+    fill-opacity: 0;
+  }
+  70%,
+  100% {
+    fill-opacity: 1;
+  }
+}
+
+
+/**
+ * Theme switch. `@antfu/design/styles/animations.css` already ships a circular
+ * reveal, but it moves the light snapshot in both directions; we want the dark
+ * one to expand in and contract back out. That means these have to beat its
+ * `html.dark::view-transition-*` rules, hence `:root` - specificity alone wins,
+ * without depending on which stylesheet the bundler emits last.
+ *
+ * The clip-path itself is driven from `use_theme`; the snapshots only need to be
+ * held still and stacked with the animating one on top. By the time these apply
+ * the swap has happened, so `dark` doubles as "which way are we going".
+ */
+:root::view-transition-old(root),
+:root::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* To light: the outgoing dark snapshot contracts, on top of the light one. */
+:root::view-transition-old(root) {
+  z-index: 9999;
+}
+
+:root::view-transition-new(root) {
+  z-index: 1;
+}
+
+/* To dark: the incoming dark snapshot expands, on top of the light one. */
+:root.dark::view-transition-old(root) {
+  z-index: 1;
+}
+
+:root.dark::view-transition-new(root) {
+  z-index: 9999;
+}
