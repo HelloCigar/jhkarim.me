@@ -17,6 +17,7 @@ import {
 } from '~/components/ui/table'
 import { formatDate } from '~/lib/format'
 import { InertiaProps } from '~/types'
+import { Head } from '@inertiajs/react';
 
 type PageProps = InertiaProps<{
   articles: {
@@ -122,4 +123,4 @@ export default function ArticlesIndex({ articles }: PageProps) {
   )
 }
 
-ArticlesIndex.layout = (page: React.ReactElement) => <DashboardLayout>{page}</DashboardLayout>
+ArticlesIndex.layout = (page: React.ReactElement) => <DashboardLayout><><Head title="Articles" />{page}</></DashboardLayout>

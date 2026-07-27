@@ -33,6 +33,7 @@ import { Switch } from '~/components/ui/switch'
 import { toastManager } from '~/components/ui/toast'
 import { pickImage, uploadImage } from '~/lib/upload'
 import { InertiaProps } from '~/types'
+import { Head } from '@inertiajs/react';
 
 type PageProps = InertiaProps<{ article: Data.Article | null }>
 
@@ -264,9 +265,11 @@ export default function ArticleEditor({ article }: PageProps) {
   // Desktop is a locked app-like split view; on smaller screens the page
   // scrolls normally so the editor and preview each get real height.
   return (
+
     <Form {...formProps} className="flex min-h-dvh flex-col gap-0 lg:h-dvh">
       {({ processing }) => (
         <>
+        <Head title={article ? `Edit: ${article.title}` : 'New Article'}></Head>
           <header className="flex h-15 shrink-0 items-center gap-2 px-3">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />

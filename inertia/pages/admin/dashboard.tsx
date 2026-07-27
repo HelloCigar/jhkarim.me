@@ -1,4 +1,5 @@
 import DashboardLayout from '~/layouts/dashboard'
+import { Head } from '@inertiajs/react'
 import { Data } from '@generated/data'
 import { Link } from '@adonisjs/inertia/react'
 import { PlusIcon } from 'lucide-react'
@@ -38,6 +39,7 @@ const statCards = [
 export default function AdminDashboard({ stats, recent }: PageProps) {
   return (
     <>
+    <Head title="Dashboard"></Head>
       <header className="flex h-15 shrink-0 items-center gap-2 px-3">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />

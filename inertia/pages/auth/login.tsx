@@ -4,6 +4,7 @@ import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
 import { Card, CardDescription, CardHeader, CardTitle, CardPanel } from '~/components/ui/card'
 import { Field, FieldError, FieldLabel } from '~/components/ui/field'
+import { Head } from '@inertiajs/react';
 
 export default function Login() {
   return (
@@ -40,4 +41,4 @@ export default function Login() {
   )
 }
 
-Login.layout = (page: React.ReactElement) => <MinimalLayout>{page}</MinimalLayout>
+Login.layout = (page: React.ReactElement) => <MinimalLayout><><Head title='Login' />{page}</></MinimalLayout>
