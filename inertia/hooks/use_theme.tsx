@@ -17,13 +17,13 @@ const ThemeContext = createContext<ThemeContext | undefined>(undefined)
 const REVEAL_DURATION = 550
 
 function readStoredTheme(): Theme {
-  if (typeof window === 'undefined') return 'light'
+  if (typeof window === 'undefined') return 'dark'
 
   const stored = localStorage.getItem('theme')
   if (stored === 'light' || stored === 'dark') return stored
 
-  // No explicit choice yet - start from whatever the OS is set to.
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  // No explicit choice yet - dark is the default look.
+  return 'dark'
 }
 
 function canAnimate() {
