@@ -2,7 +2,7 @@ import DefaultLayout from '~/layouts/default'
 import { Head } from '@inertiajs/react'
 import { Data } from '@generated/data'
 import { Link } from '@adonisjs/inertia/react'
-import { ArrowLeftIcon, MapPinIcon } from 'lucide-react'
+import { ArrowLeftIcon, ChevronRight, MapPinIcon } from 'lucide-react'
 import { ArticleComark } from '~/components/comark/article_comark'
 import { Badge } from '~/components/ui/badge'
 import { formatDate } from '~/lib/format'
@@ -19,10 +19,10 @@ export default function BlogShow({ article }: PageProps) {
         <div className="pt-12">
           <Link
             route="home"
-            className="inline-flex items-center gap-1.5 text-sm color-muted hover:color-base"
+            className="inline-flex items-center gap-1.5 text-sm color-muted hover:color-base underline"
           >
-            <ArrowLeftIcon className="size-4" />
-            All articles
+            <ChevronRight className="size-4" />
+            cd ..
           </Link>
 
           <h1 className="mt-6 text-4xl font-medium leading-tight">{article.title}</h1>
