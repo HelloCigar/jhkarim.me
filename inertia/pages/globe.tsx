@@ -18,6 +18,9 @@ type PageProps = InertiaProps<{ articles: Data.Article[] }>
  */
 const HEX_RESOLUTION = 3
 
+/** The globe opens on the Philippines rather than spinning. */
+const INITIAL_POINT_OF_VIEW = { lat: 12.8797, lng: 121.774, altitude: 2 }
+
 const globeThemes = {
   light: { land: '#8497b4', marker: '#b91c1c' },
   dark: { land: '#264a70', marker: '#f59e0b' },
@@ -194,11 +197,7 @@ export default function GlobePage({ articles }: PageProps) {
       applyGlobeTheme(globe, container, themeRef.current)
       globeRef.current = globe
 
-      globe.controls().autoRotate = true
-      globe.controls().autoRotateSpeed = 0.6
-
-      const first = markers[0]
-      if (first) globe.pointOfView({ lat: first.lat, lng: first.lng, altitude: 2 }, 0)
+      globe.pointOfView(INITIAL_POINT_OF_VIEW, 0)
 
       observer.observe(container)
     })
@@ -236,4 +235,8 @@ export default function GlobePage({ articles }: PageProps) {
   )
 }
 
-GlobePage.layout = (page: React.ReactElement) => <DefaultLayout>{page}</DefaultLayout>
+// The sphere's own surface covers the viewport, so the branch canvas behind it
+// would only ever be wasted frames.
+GlobePage.layout = (page: React.ReactElement) => (
+  <DefaultLayout background={false}>{page}</DefaultLayout>
+)
