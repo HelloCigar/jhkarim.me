@@ -7,6 +7,7 @@ import {
   updateArticleValidator,
 } from '#validators/article'
 import type { HttpContext } from '@adonisjs/core/http'
+import cache from '@adonisjs/cache/services/main'
 import { DateTime } from 'luxon'
 
 /**
@@ -21,10 +22,25 @@ export default class ArticlesController {
     await bouncer.with(ArticlePolicy).authorize('viewList')
 
     const { page = 1, perPage = 30 } = await request.validateUsing(listArticleValidator)
-    const articles = await Article.query().orderBy('createdAt', 'desc').paginate(page, perPage)
+
+    /**
+     * The cache stores plain JSON, so the paginator has to be unwrapped
+     * inside the factory: a ModelPaginator read back from the store no
+     * longer carries its all() and getMeta() methods.
+     */
+    const { rows, meta } = await cache.getOrSet({
+      key: `articles:page:${page}:perPage:${perPage}`,
+      ttl: '10m',
+      tags: ['articles'],
+      factory: async () => {
+        const paginator = await Article.query().orderBy('createdAt', 'desc').paginate(page, perPage)
+
+        return { rows: paginator.all(), meta: paginator.getMeta() }
+      },
+    })
 
     return inertia.render('admin/articles/index', {
-      articles: ArticleTransformer.paginate(articles.all(), articles.getMeta()),
+      articles: ArticleTransformer.paginate(rows, meta),
     })
   }
 
@@ -53,6 +69,8 @@ export default class ArticlesController {
       publishedAt: published ? DateTime.now() : null,
     })
 
+    await cache.deleteByTag({ tags: ['articles'] })
+
     session.flash('success', 'Article created')
     return response.redirect().toRoute('articles.edit', { id: article.id })
   }
@@ -68,7 +86,11 @@ export default class ArticlesController {
    * Render the editor for an existing article
    */
   async edit({ params, inertia, bouncer }: HttpContext) {
-    const article = await Article.findOrFail(params.id)
+    const article = await cache.getOrSet({
+      key: `article:${params.id}`,
+      ttl: '10m',
+      factory: () => Article.findOrFail(params.id),
+    })
     await bouncer.with(ArticlePolicy).authorize('edit', article)
 
     return inertia.render('admin/articles/editor', {
@@ -97,6 +119,9 @@ export default class ArticlesController {
     })
     await article.save()
 
+    await cache.delete({ key: `article:${article.id}` })
+    await cache.deleteByTag({ tags: ['articles'] })
+
     session.flash('success', 'Article updated')
     return response.redirect().toRoute('articles.edit', { id: article.id })
   }
@@ -109,6 +134,9 @@ export default class ArticlesController {
     await bouncer.with(ArticlePolicy).authorize('delete', article)
 
     await article.delete()
+
+    await cache.delete({ key: `article:${article.id}` })
+    await cache.deleteByTag({ tags: ['articles'] })
 
     session.flash('success', 'Article deleted')
     return response.redirect().toRoute('articles.index')

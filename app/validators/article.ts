@@ -39,7 +39,12 @@ export const updateArticleValidator = vine.create({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
 })
 
+/**
+ * Both values end up in the cache key for the article list, so they are
+ * bounded to keep the key space (and the page size hitting the database)
+ * from being driven by arbitrary query string input.
+ */
 export const listArticleValidator = vine.create({
-  page: vine.number().optional(),
-  perPage: vine.number().optional(),
+  page: vine.number().withoutDecimals().min(1).optional(),
+  perPage: vine.number().withoutDecimals().range([1, 100]).optional(),
 })

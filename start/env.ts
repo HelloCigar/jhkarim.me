@@ -50,4 +50,10 @@ export default await Env.create(new URL('../', import.meta.url), {
   S3_BUCKET: Env.schema.string(),
   AWS_ENDPOINT: Env.schema.string(),
   AWS_PUBLIC_ACCESS_URL: Env.schema.string(),
+
+  CACHE_STORE: Env.schema.enum(['default', 'memoryOnly'] as const),
+
+  REDIS_HOST: Env.schema.string({ format: 'host' }),
+  REDIS_PORT: Env.schema.number(),
+  REDIS_PASSWORD: Env.schema.secret.optional(),
 })

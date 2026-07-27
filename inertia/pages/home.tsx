@@ -29,7 +29,7 @@ export default function Home({ articles }: PageProps) {
         <div className="pt-16 pb-10">
           <h1 className="text-4xl font-medium">Field notes</h1>
           <p className="mt-3 color-muted">
-            Stories, snippets and places — in chronological order.
+            Stories, snippets and places of I've been to — in chronological order.
           </p>
         </div>
 
