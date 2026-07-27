@@ -40,5 +40,6 @@ router
     router.get('admin', [controllers.Admin, 'index'])
     router.resource('admin/articles', controllers.Articles).as('articles')
     router.post('admin/uploads', [controllers.Uploads, 'store'])
+    router.get('admin/geocode', [controllers.Geocoding, 'search'])
   })
   .use(middleware.auth())

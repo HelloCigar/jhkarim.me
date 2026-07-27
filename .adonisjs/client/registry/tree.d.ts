@@ -33,4 +33,7 @@ export interface ApiDefinition {
     update: typeof routes['articles.update']
     destroy: typeof routes['articles.destroy']
   }
+  geocoding: {
+    search: typeof routes['geocoding.search']
+  }
 }

@@ -108,6 +108,12 @@ const routes = {
     tokens: [{"old":"/admin/uploads","type":0,"val":"admin","end":""},{"old":"/admin/uploads","type":0,"val":"uploads","end":""}],
     types: placeholder as Registry['uploads.store']['types'],
   },
+  'geocoding.search': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/geocode',
+    tokens: [{"old":"/admin/geocode","type":0,"val":"admin","end":""},{"old":"/admin/geocode","type":0,"val":"geocode","end":""}],
+    types: placeholder as Registry['geocoding.search']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

@@ -15,6 +15,7 @@ import {
   ListIcon,
   ListOrderedIcon,
   CodeIcon,
+  MapPinIcon,
   StrikethroughIcon,
   TextQuoteIcon,
   UploadIcon,
@@ -31,6 +32,7 @@ import { SidebarTrigger } from '~/components/ui/sidebar'
 import { Spinner } from '~/components/ui/spinner'
 import { Switch } from '~/components/ui/switch'
 import { toastManager } from '~/components/ui/toast'
+import { geocode, type GeocodeResult } from '~/lib/geocode'
 import { pickImage, uploadImage } from '~/lib/upload'
 import { InertiaProps } from '~/types'
 import { Head } from '@inertiajs/react';
@@ -85,6 +87,12 @@ export default function ArticleEditor({ article }: PageProps) {
   const [coverImage, setCoverImage] = useState(article?.coverImage ?? '')
   const [published, setPublished] = useState(article?.isPublished ?? false)
   const [uploading, setUploading] = useState(false)
+
+  const [locationName, setLocationName] = useState(article?.locationName ?? '')
+  const [latitude, setLatitude] = useState(article?.latitude?.toString() ?? '')
+  const [longitude, setLongitude] = useState(article?.longitude?.toString() ?? '')
+  const [geocoding, setGeocoding] = useState(false)
+  const [matches, setMatches] = useState<GeocodeResult[]>([])
 
   const contentRef = useRef<HTMLTextAreaElement>(null)
 
@@ -258,6 +266,49 @@ export default function ArticleEditor({ article }: PageProps) {
     }
   }
 
+  function applyMatch(match: GeocodeResult) {
+    setLocationName(match.label)
+    setLatitude(match.latitude.toString())
+    setLongitude(match.longitude.toString())
+    setMatches([])
+  }
+
+  /**
+   * Resolve the location field into coordinates. A single hit is
+   * unambiguous and fills straight in, anything else is offered as a list
+   * to pick from — there are a lot of Londons.
+   */
+  async function findCoordinates() {
+    const query = locationName.trim()
+    if (query.length < 2) return
+
+    setGeocoding(true)
+    setMatches([])
+    try {
+      const results = await geocode(query)
+
+      if (results.length === 0) {
+        toastManager.add({
+          type: 'error',
+          title: 'No match',
+          description: `Could not find "${query}"`,
+        })
+      } else if (results.length === 1) {
+        applyMatch(results[0])
+      } else {
+        setMatches(results)
+      }
+    } catch (error) {
+      toastManager.add({
+        type: 'error',
+        title: 'Lookup failed',
+        description: error instanceof Error ? error.message : 'Could not look up the location',
+      })
+    } finally {
+      setGeocoding(false)
+    }
+  }
+
   const formProps = article
     ? ({ route: 'articles.update', routeParams: { id: article.id } } as const)
     : ({ route: 'articles.store' } as const)
@@ -361,10 +412,51 @@ export default function ArticleEditor({ article }: PageProps) {
               </div>
               <FieldError />
             </Field>
-            <Field name="locationName">
+            <Field name="locationName" className="relative">
               <FieldLabel>Location</FieldLabel>
-              <Input defaultValue={article?.locationName ?? ''} placeholder="Manila, Philippines" />
+              <div className="flex w-full gap-2">
+                <Input
+                  value={locationName}
+                  placeholder="Manila, Philippines"
+                  onChange={(e) => setLocationName(e.target.value)}
+                  onKeyDown={(e) => {
+                    // Enter would submit the whole article, look up instead
+                    if (e.key !== 'Enter') return
+                    e.preventDefault()
+                    findCoordinates()
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={findCoordinates}
+                  disabled={geocoding || locationName.trim().length < 2}
+                  title="Find coordinates"
+                  aria-label="Find coordinates for this location"
+                >
+                  {geocoding ? <Spinner /> : <MapPinIcon />}
+                </Button>
+              </div>
               <FieldError />
+              {matches.length > 0 && (
+                <ul className="absolute top-full z-10 mt-1 w-full overflow-hidden rounded border border-base bg-base shadow-lg">
+                  {matches.map((match) => (
+                    <li key={`${match.latitude},${match.longitude}`}>
+                      <button
+                        type="button"
+                        className="flex w-full flex-col items-start px-3 py-2 text-left hover:bg-hover"
+                        onClick={() => applyMatch(match)}
+                      >
+                        <span className="text-sm color-base">{match.label}</span>
+                        <span className="font-mono text-xs color-muted tabular-nums">
+                          {match.latitude.toFixed(4)}, {match.longitude.toFixed(4)}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </Field>
             <Field name="latitude">
               <FieldLabel>Latitude</FieldLabel>
@@ -374,7 +466,8 @@ export default function ArticleEditor({ article }: PageProps) {
                 min={-90}
                 max={90}
                 className="font-mono tabular-nums"
-                defaultValue={article?.latitude ?? ''}
+                value={latitude}
+                onChange={(e) => setLatitude(e.target.value)}
                 placeholder="14.5995"
               />
               <FieldError />
@@ -387,7 +480,8 @@ export default function ArticleEditor({ article }: PageProps) {
                 min={-180}
                 max={180}
                 className="font-mono tabular-nums"
-                defaultValue={article?.longitude ?? ''}
+                value={longitude}
+                onChange={(e) => setLongitude(e.target.value)}
                 placeholder="120.9842"
               />
               <FieldError />

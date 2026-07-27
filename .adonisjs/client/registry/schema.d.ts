@@ -211,4 +211,16 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/uploads_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'geocoding.search': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/geocode'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/geocoding').geocodeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/geocoding_controller').default['search']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/geocoding_controller').default['search']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
 }

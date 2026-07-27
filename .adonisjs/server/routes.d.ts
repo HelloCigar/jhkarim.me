@@ -21,6 +21,7 @@ export type ScannedRoutes = {
     'articles.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'articles.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'uploads.store': { paramsTuple?: []; params?: {} }
+    'geocoding.search': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -34,6 +35,7 @@ export type ScannedRoutes = {
     'articles.create': { paramsTuple?: []; params?: {} }
     'articles.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'articles.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'geocoding.search': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -47,6 +49,7 @@ export type ScannedRoutes = {
     'articles.create': { paramsTuple?: []; params?: {} }
     'articles.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'articles.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'geocoding.search': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'session.store': { paramsTuple?: []; params?: {} }
