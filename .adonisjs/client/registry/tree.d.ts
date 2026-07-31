@@ -16,6 +16,10 @@ export interface ApiDefinition {
     index: typeof routes['uploads.index']
     store: typeof routes['uploads.store']
   }
+  sendNewsletters: {
+    subscribe: typeof routes['send_newsletters.subscribe']
+    unsubscribe: typeof routes['send_newsletters.unsubscribe']
+  }
   session: {
     create: typeof routes['session.create']
     store: typeof routes['session.store']

@@ -1,0 +1,234 @@
+{{--
+  Newsletter sent to subscribers when new articles go out.
+
+  Email clients are not browsers: the layout is tables, every style is inline,
+  and the only stylesheet is the small <head> block below (media queries are the
+  one thing inline styles cannot express). Keep it that way when editing.
+
+  Expected data — see #jobs/send_newsletter:
+    subject, intro?, siteUrl, unsubscribeUrl?, articles[]
+--}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    <title>{{ subject }}</title>
+    <style>
+      /* Clients that ignore this block still get the inline styles. */
+      body,
+      table,
+      td,
+      a {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+      img {
+        -ms-interpolation-mode: bicubic;
+      }
+      a {
+        color: inherit;
+      }
+
+      @media only screen and (max-width: 620px) {
+        .sm-px {
+          padding-left: 20px !important;
+          padding-right: 20px !important;
+        }
+        .sm-title {
+          font-size: 20px !important;
+        }
+      }
+
+      /* Apple Mail / Outlook.com honour this; Gmail keeps the light version. */
+      @media (prefers-color-scheme: dark) {
+        .body-bg {
+          background-color: #121212 !important;
+        }
+        .card-bg {
+          background-color: #1a1a1a !important;
+        }
+        .text-base {
+          color: #ececec !important;
+        }
+        .text-muted {
+          color: #a1a1a1 !important;
+        }
+        .text-faint {
+          color: #8a8a8a !important;
+        }
+        .border-base {
+          border-color: #2e2e2e !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body
+    class="body-bg"
+    style="margin: 0; padding: 0; width: 100%; background-color: #fafafa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;"
+  >
+    {{--
+      Preheader: the grey line clients show next to the subject. The trailing
+      entities stop the client from pulling body copy in after it.
+    --}}
+    <div
+      style="display: none; max-height: 0; overflow: hidden; mso-hide: all; font-size: 1px; line-height: 1px; color: #fafafa;"
+    >
+      {{ intro || (articles[0] && articles[0].excerpt) || 'New writing from ' + siteName }}
+      &#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;
+    </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="body-bg" style="background-color: #fafafa;">
+      <tr>
+        <td align="center" style="padding: 0;">
+          <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+          <table
+            role="presentation"
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            style="width: 100%; max-width: 600px; margin: 0 auto;"
+          >
+            {{-- Masthead --}}
+            <tr>
+              <td class="sm-px" style="padding: 40px 32px 24px;">
+                <a
+                  href="{{ siteUrl }}"
+                  class="text-base"
+                  style="color: #18181b; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; text-decoration: none;"
+                  >{{ siteName }}</a
+                >
+                <div class="text-faint" style="margin-top: 4px; font-size: 13px; color: #8f8f95;">
+                  Stories, snippets and places I've been to.
+                </div>
+              </td>
+            </tr>
+
+            {{-- Card --}}
+            <tr>
+              <td style="padding: 0 0 8px;">
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  class="card-bg border-base"
+                  style="background-color: #ffffff; border: 1px solid #e6e6e9; border-radius: 12px;"
+                >
+                  <tr>
+                    <td class="sm-px" style="padding: 32px 32px 8px;">
+                      <h1
+                        class="text-base sm-title"
+                        style="margin: 0; font-size: 24px; line-height: 1.25; font-weight: 600; letter-spacing: -0.02em; color: #18181b;"
+                      >
+                        {{ subject }}
+                      </h1>
+                      @if(intro)
+                        <p class="text-muted" style="margin: 12px 0 0; font-size: 15px; line-height: 1.6; color: #6e6e76;">
+                          {{ intro }}
+                        </p>
+                      @end
+                    </td>
+                  </tr>
+
+                  @each((article, index) in articles)
+                    <tr>
+                      <td class="sm-px" style="padding: 24px 32px 0;">
+                        @if(index > 0)
+                          {{-- Separator: a bordered cell survives clients that drop <hr>. --}}
+                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                              <td
+                                class="border-base"
+                                style="height: 1px; line-height: 1px; font-size: 0; border-top: 1px solid #e6e6e9;"
+                              >
+                                &nbsp;
+                              </td>
+                            </tr>
+                          </table>
+                        @end
+
+                        <div
+                          class="text-faint"
+                          style="{{ index > 0 ? 'margin-top: 24px; ' : '' }}font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; color: #8f8f95;"
+                        >
+                          {{ article.publishedAt }}
+                          @if(article.locationName)
+                            &nbsp;&middot;&nbsp; {{ article.locationName }}
+                          @end
+                        </div>
+
+                        <h2 style="margin: 8px 0 0; font-size: 19px; line-height: 1.35; font-weight: 600; letter-spacing: -0.01em;">
+                          <a
+                            href="{{ article.url }}"
+                            class="text-base"
+                            style="color: #18181b; text-decoration: none;"
+                            >{{ article.title }}</a
+                          >
+                        </h2>
+
+                        @if(article.excerpt)
+                          <p class="text-muted" style="margin: 8px 0 0; font-size: 15px; line-height: 1.6; color: #6e6e76;">
+                            {{ article.excerpt }}
+                          </p>
+                        @end
+
+                        @if(article.coverImage)
+                          <a href="{{ article.url }}" style="display: block; text-decoration: none;">
+                            <img
+                              src="{{ article.coverImage }}"
+                              alt="{{ article.title }}"
+                              width="536"
+                              class="border-base"
+                              style="display: block; width: 100%; max-width: 536px; height: auto; margin-top: 16px; border: 1px solid #e6e6e9; border-radius: 8px;"
+                            />
+                          </a>
+                        @end
+
+                        <p style="margin: 14px 0 0; font-size: 14px;">
+                          <a
+                            href="{{ article.url }}"
+                            class="text-base"
+                            style="color: #18181b; text-decoration: underline; text-underline-offset: 3px;"
+                            >Read it &rarr;</a
+                          >
+                        </p>
+                      </td>
+                    </tr>
+                  @end
+
+                  <tr>
+                    <td style="padding: 0 0 32px;">&nbsp;</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            {{-- Footer --}}
+            <tr>
+              <td class="sm-px" style="padding: 24px 32px 40px;">
+                <p class="text-faint" style="margin: 0; font-size: 12px; line-height: 1.6; color: #8f8f95;">
+                  You're getting this because you subscribed to {{ siteName }}.
+                </p>
+                <p class="text-faint" style="margin: 6px 0 0; font-size: 12px; line-height: 1.6; color: #8f8f95;">
+                  <a href="{{ siteUrl }}" style="color: #8f8f95; text-decoration: underline;">Read on the web</a>
+                  @if(unsubscribeUrl)
+                    &nbsp;·&nbsp;
+                    <a href="{{ unsubscribeUrl }}" style="color: #8f8f95; text-decoration: underline;">Unsubscribe</a>
+                  @end
+                </p>
+              </td>
+            </tr>
+          </table>
+          <!--[if mso]></td></tr></table><![endif]-->
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

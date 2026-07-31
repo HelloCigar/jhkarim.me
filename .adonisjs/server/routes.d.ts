@@ -9,6 +9,8 @@ export type ScannedRoutes = {
     'blog.globe': { paramsTuple?: []; params?: {} }
     'blog.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'uploads.index': { paramsTuple?: []; params?: {} }
+    'send_newsletters.subscribe': { paramsTuple?: []; params?: {} }
+    'send_newsletters.unsubscribe': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.create': { paramsTuple?: []; params?: {} }
     'session.store': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }
@@ -29,6 +31,8 @@ export type ScannedRoutes = {
     'blog.globe': { paramsTuple?: []; params?: {} }
     'blog.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'uploads.index': { paramsTuple?: []; params?: {} }
+    'send_newsletters.subscribe': { paramsTuple?: []; params?: {} }
+    'send_newsletters.unsubscribe': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.create': { paramsTuple?: []; params?: {} }
     'admin.index': { paramsTuple?: []; params?: {} }
     'articles.index': { paramsTuple?: []; params?: {} }
@@ -43,6 +47,8 @@ export type ScannedRoutes = {
     'blog.globe': { paramsTuple?: []; params?: {} }
     'blog.show': { paramsTuple: [ParamValue]; params: {'slug': ParamValue} }
     'uploads.index': { paramsTuple?: []; params?: {} }
+    'send_newsletters.subscribe': { paramsTuple?: []; params?: {} }
+    'send_newsletters.unsubscribe': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.create': { paramsTuple?: []; params?: {} }
     'admin.index': { paramsTuple?: []; params?: {} }
     'articles.index': { paramsTuple?: []; params?: {} }

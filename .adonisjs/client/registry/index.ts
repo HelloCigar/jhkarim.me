@@ -36,6 +36,18 @@ const routes = {
     tokens: [{"old":"/photos","type":0,"val":"photos","end":""}],
     types: placeholder as Registry['uploads.index']['types'],
   },
+  'send_newsletters.subscribe': {
+    methods: ["GET","HEAD"],
+    pattern: '/subcribe',
+    tokens: [{"old":"/subcribe","type":0,"val":"subcribe","end":""}],
+    types: placeholder as Registry['send_newsletters.subscribe']['types'],
+  },
+  'send_newsletters.unsubscribe': {
+    methods: ["GET","HEAD"],
+    pattern: '/unsubcribe/:id',
+    tokens: [{"old":"/unsubcribe/:id","type":0,"val":"unsubcribe","end":""},{"old":"/unsubcribe/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['send_newsletters.unsubscribe']['types'],
+  },
   'session.create': {
     methods: ["GET","HEAD"],
     pattern: '/login',

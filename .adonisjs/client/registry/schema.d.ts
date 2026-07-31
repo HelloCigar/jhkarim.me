@@ -67,6 +67,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/uploads_controller').default['index']>>>
     }
   }
+  'send_newsletters.subscribe': {
+    methods: ["GET","HEAD"]
+    pattern: '/subcribe'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/newsletter').subscribeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/send_newsletters_controller').default['subscribe']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/send_newsletters_controller').default['subscribe']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'send_newsletters.unsubscribe': {
+    methods: ["GET","HEAD"]
+    pattern: '/unsubcribe/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/send_newsletters_controller').default['unsubscribe']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/send_newsletters_controller').default['unsubscribe']>>>
+    }
+  }
   'session.create': {
     methods: ["GET","HEAD"]
     pattern: '/login'

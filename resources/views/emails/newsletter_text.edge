@@ -1,0 +1,30 @@
+{{--
+  Plain-text twin of newsletter.edge. Sent as the text/plain alternative:
+  it is what text-only clients show, and its absence hurts spam scores.
+  Keep the content in step with the HTML version.
+--}}
+{{ subject }}
+{{ '='.repeat(subject.length) }}
+@if(intro)
+
+{{ intro }}
+@end
+@each(article in articles)
+
+---
+
+{{ article.publishedAt }}{{ article.locationName ? ` · ${article.locationName}` : '' }}
+{{ article.title }}
+@if(article.excerpt)
+{{ article.excerpt }}
+@end
+{{ article.url }}
+@end
+
+---
+
+You're getting this because you subscribed to {{ siteName }}.
+Read on the web: {{ siteUrl }}
+@if(unsubscribeUrl)
+Unsubscribe: {{ unsubscribeUrl }}
+@end

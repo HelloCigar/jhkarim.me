@@ -16,8 +16,10 @@ import router from '@adonisjs/core/services/router'
  */
 router.get('/', [controllers.Blog, 'index']).as('home')
 router.get('/globe', [controllers.Blog, 'globe'])
-router.get('/articles/:slug', [controllers.Blog, 'show'])
+router.get('/articles/:slug', [controllers.Blog, 'show']).where('slug', router.matchers.slug())
 router.get('/photos', [controllers.Uploads, 'index'])
+router.get('/subcribe', [controllers.SendNewsletters, 'subscribe'])
+router.get('/unsubcribe/:id', [controllers.SendNewsletters, 'unsubscribe'])
 
 /**
  * There is no self signup: the only account is the admin created
@@ -43,3 +45,14 @@ router
     router.get('admin/geocode', [controllers.Geocoding, 'search'])
   })
   .use(middleware.auth())
+
+// router.on('/test').render(
+//   'emails/newsletter',
+//   await SendNewsletterService.getData({
+//     articleIds: [3, 4],
+//     email: 'jckarim@up.edu.ph',
+//     subject: 'Newsletter',
+//     intro: 'something intro',
+//     unsubscribeUrl: 'url'
+//   })
+// )

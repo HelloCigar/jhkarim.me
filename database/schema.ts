@@ -38,6 +38,21 @@ export class ArticleSchema extends BaseModel {
   declare userId: number
 }
 
+export class SubscriberSchema extends BaseModel {
+  static $columns = ['active', 'createdAt', 'email', 'id', 'updatedAt'] as const
+  $columns = SubscriberSchema.$columns
+  @column()
+  declare active: boolean
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare email: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class UserSchema extends BaseModel {
   static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
   $columns = UserSchema.$columns
