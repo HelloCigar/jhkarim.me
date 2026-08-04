@@ -57,20 +57,22 @@ export type ScannedRoutes = {
     'articles.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'geocoding.search': { paramsTuple?: []; params?: {} }
   }
+  PUT: {
+    'articles.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  DELETE: {
+    'articles.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
   POST: {
     'session.store': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }
     'articles.store': { paramsTuple?: []; params?: {} }
     'uploads.store': { paramsTuple?: []; params?: {} }
   }
-  PUT: {
-    'articles.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  OPTIONS: {
   }
   PATCH: {
     'articles.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-  }
-  DELETE: {
-    'articles.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

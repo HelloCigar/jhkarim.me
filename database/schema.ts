@@ -38,6 +38,58 @@ export class ArticleSchema extends BaseModel {
   declare userId: number
 }
 
+export class PeriscopeEntrySchema extends BaseModel {
+  static $columns = ['application', 'batchId', 'content', 'createdAt', 'familyHash', 'sequence', 'shouldDisplayOnIndex', 'tags', 'type', 'uuid'] as const
+  $columns = PeriscopeEntrySchema.$columns
+  @column()
+  declare application: string
+  @column()
+  declare batchId: string
+  @column()
+  declare content: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare familyHash: string | null
+  @column()
+  declare sequence: string
+  @column()
+  declare shouldDisplayOnIndex: number
+  @column()
+  declare tags: string
+  @column()
+  declare type: string
+  @column({ isPrimary: true })
+  declare uuid: string
+}
+
+export class PeriscopeEntryTagSchema extends BaseModel {
+  static $columns = ['entryUuid', 'tag'] as const
+  $columns = PeriscopeEntryTagSchema.$columns
+  @column({ isPrimary: true })
+  declare entryUuid: string
+  @column()
+  declare tag: string
+}
+
+export class PeriscopeFlagSchema extends BaseModel {
+  static $columns = ['expiresAt', 'name', 'value'] as const
+  $columns = PeriscopeFlagSchema.$columns
+  @column()
+  declare expiresAt: bigint | number | null
+  @column({ isPrimary: true })
+  declare name: string
+  @column()
+  declare value: string
+}
+
+export class PeriscopeMonitoredTagSchema extends BaseModel {
+  static $columns = ['tag'] as const
+  $columns = PeriscopeMonitoredTagSchema.$columns
+  @column({ isPrimary: true })
+  declare tag: string
+}
+
 export class SubscriberSchema extends BaseModel {
   static $columns = ['active', 'createdAt', 'email', 'id', 'updatedAt'] as const
   $columns = SubscriberSchema.$columns

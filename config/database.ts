@@ -6,6 +6,7 @@ const dbConfig = defineConfig({
   connection: !app.inProduction ? 'sqlite' : 'postgres',
   connections: {
     sqlite: {
+      debug: true,
       client: 'better-sqlite3',
       connection: {
         filename: app.tmpPath('db.sqlite3'),

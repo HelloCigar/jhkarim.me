@@ -23,11 +23,13 @@ server.errorHandler(() => import('#exceptions/handler'))
  * the request URL.
  */
 server.use([
+  () => import('@rikology/adonisjs-periscope/middleware/request_watcher'),
   () => import('#middleware/container_bindings_middleware'),
   () => import('@adonisjs/static/static_middleware'),
   () => import('@adonisjs/cors/cors_middleware'),
   () => import('@adonisjs/vite/vite_middleware'),
   () => import('#middleware/inertia_middleware'),
+  () => import('#middleware/evlog_middleware')
 ])
 
 /**

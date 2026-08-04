@@ -7,9 +7,10 @@ export default class AdminController {
   /**
    * Blog dashboard: article stats and the latest entries
    */
-  async index({ inertia, bouncer }: HttpContext) {
+  async index({ inertia, bouncer, evlog }: HttpContext) {
     await bouncer.with(ArticlePolicy).authorize('viewList')
 
+    evlog.set({ query: 'getting all articles' })
     const [total, published, located, recent] = await Promise.all([
       Article.query().count('* as total').firstOrFail(),
       Article.query().whereNotNull('publishedAt').count('* as total').firstOrFail(),
@@ -23,6 +24,9 @@ export default class AdminController {
 
     const totalCount = Number(total.$extras.total)
     const publishedCount = Number(published.$extras.total)
+
+    evlog.set({ totalCount: totalCount })
+    evlog.set({ publishedCount: publishedCount })
 
     return inertia.render('admin/dashboard', {
       stats: {

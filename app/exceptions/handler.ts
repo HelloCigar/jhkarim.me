@@ -1,8 +1,9 @@
 import app from '@adonisjs/core/services/app'
 import { type HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 import type { StatusPageRange, StatusPageRenderer } from '@adonisjs/core/types/http'
+import { withPeriscope } from '@rikology/adonisjs-periscope/exception_reporter'
 
-export default class HttpExceptionHandler extends ExceptionHandler {
+class HttpExceptionHandler extends ExceptionHandler {
   /**
    * In debug mode, the exception handler will display verbose errors
    * with pretty printed stack traces.
@@ -43,3 +44,5 @@ export default class HttpExceptionHandler extends ExceptionHandler {
     return super.report(error, ctx)
   }
 }
+
+export default withPeriscope(HttpExceptionHandler)

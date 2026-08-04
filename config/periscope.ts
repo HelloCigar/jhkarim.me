@@ -1,0 +1,424 @@
+// Add the exported `DEFAULT_REDACT_*` lists to this import to extend, rather than replace, the
+// redaction defaults Periscope ships with — see the `redact` block below.
+import { defineConfig } from '@rikology/adonisjs-periscope/periscope_config'
+
+export default defineConfig({
+  /**
+   * Master switch. Combined with `enabledIn` and the `PERISCOPE_ENABLED` environment variable:
+   * `PERISCOPE_ENABLED=1` forces recording on and `PERISCOPE_ENABLED=0` forces it off, whatever
+   * this file says.
+   *
+   * Default: true
+   */
+  enabled: true,
+
+  /**
+   * Stable label stamped onto entries. Give every app a distinct value when multiple deployments
+   * share the same database driver.
+   *
+   * Default: 'default'
+   */
+  applicationName: 'default',
+
+  /**
+   * The `NODE_ENV` values Periscope is allowed to record in. Production is opt-in on purpose.
+   *
+   * Default: ['development', 'test']
+   */
+  enabledIn: ['development', 'test'],
+
+  storage: {
+    /**
+     * Where entries are persisted.
+     *
+     * - `sqlite-local`: a SQLite file of Periscope's own under `tmp/`. No setup, nothing in your
+     *   application's database, and `rm tmp/periscope.sqlite` starts over.
+     * - `database`: your application's own Lucid connection, so entries live beside your data
+     *   and are reachable from every process that shares it. Requires `@adonisjs/lucid`, and the
+     *   Periscope tables have to exist — run the shipped migration before switching.
+     * - `memory`: a ring buffer that dies with the process. Fine for tests, useless for
+     *   debugging the crash that restarted the server.
+     *
+     * Default: 'sqlite-local'
+     */
+    driver: 'sqlite-local',
+
+    /**
+     * Lucid connection name, used by the `database` driver only. Omit it to use your default
+     * connection; name a dedicated one to keep debug traffic off your primary.
+     */
+
+    //connection: 'sqlite',
+
+    /**
+     * Hard ceiling on stored entries; the oldest are trimmed away past it.
+     *
+     * Default: 10_000
+     */
+    maxEntries: 10_000,
+
+    /**
+     * Automatically prune entries older than this many hours every fifteen minutes. Keep
+     * exceptions when historical failure context matters longer than routine telemetry.
+     *
+     * Default: disabled
+     */
+    // retention: {
+    //   hours: 48,
+    //   keepExceptions: true,
+    // },
+  },
+
+  recording: {
+    /**
+     * Per-entry-type caps applied within a single batch, so one runaway loop cannot turn a
+     * single request into fifty thousand query entries. `default` covers every type you do not
+     * list; `0` records none of that type.
+     *
+     * Default: 100 for every type, except `query` which defaults to 200.
+     */
+    caps: {
+      default: 100,
+      query: 200,
+    },
+
+    /**
+     * Fraction of batches retained. The decision is made once when each batch opens; monitored
+     * tags and `keepAlways` may still retain a sampled-out batch at flush time.
+     *
+     * Default: 1
+     */
+    sampleRate: 1,
+
+    /**
+     * Inspect a completed batch before a sampling drop. The facade avoids exposing the mutable
+     * recorder buffer and supports type, tag, and custom entry predicates.
+     *
+     * Default: () => false
+     */
+    // keepAlways: (batch) =>
+    //   batch.hasEntryOfType('exception') ||
+    //   batch.hasTag('important') ||
+    //   batch.hasEntryWhere((entry) => Number(entry.content.durationMs) > 1_000),
+
+    /**
+     * How often the ambient batch — everything recorded outside a request, command or job — is
+     * rotated and flushed, in milliseconds.
+     *
+     * Default: 10_000
+     */
+    ambientRotationMs: 10_000,
+
+    /**
+     * How long the recorder caches the "paused" flag before re-reading it, in milliseconds.
+     * Lower means `node ace periscope:pause` takes effect faster, at the cost of more reads.
+     *
+     * Default: 5_000
+     */
+    pausedFlagTtlMs: 5_000,
+  },
+
+  redact: {
+    /**
+     * Keys whose values are scrubbed wherever they appear, at any depth. Matching ignores case,
+     * underscores, hyphens and spaces, so `apiKey`, `api_key` and `API-KEY` all match `apikey`.
+     *
+     * This list REPLACES the shipped defaults rather than extending them. To add to them,
+     * import and spread `DEFAULT_REDACT_KEYS` from '@rikology/adonisjs-periscope/periscope_config':
+     *
+     *   keys: [...DEFAULT_REDACT_KEYS, 'internal_reference'],
+     */
+    // keys: [...DEFAULT_REDACT_KEYS, 'internal_reference'],
+
+    /**
+     * HTTP header names to scrub. Replaces `DEFAULT_REDACT_HEADERS`, same as above.
+     */
+    // headers: [...DEFAULT_REDACT_HEADERS, 'x-internal-token'],
+
+    /**
+     * Secret-shaped substrings scrubbed from captured strings. Bearer/JWT credentials, common
+     * API-key shapes, password assignments/URL credentials, and Luhn-valid card numbers are on
+     * by default. This array REPLACES `DEFAULT_REDACT_VALUE_PATTERNS`; set it to false to disable
+     * value scanning.
+     *
+     * Email addresses remain visible unless `REDACT_EMAIL_PATTERN` is added explicitly:
+     *
+     *   valuePatterns: [...DEFAULT_REDACT_VALUE_PATTERNS, REDACT_EMAIL_PATTERN],
+     */
+    // valuePatterns: [...DEFAULT_REDACT_VALUE_PATTERNS, REDACT_EMAIL_PATTERN],
+
+    /**
+     * What redacted values are replaced with.
+     *
+     * Default: '[REDACTED]'
+     */
+    replacement: '[REDACTED]',
+  },
+
+  hooks: {
+    /**
+     * Drop entries before they enter a batch. Filter hooks see the original entry before
+     * redaction, so never copy sensitive content into logs or other side channels.
+     */
+    // filter: [(entry) => entry.type !== 'log'],
+    /**
+     * Attach application-specific exact tags after redaction. Returned tags are de-duplicated.
+     */
+    // tag: [(entry) => (entry.type === 'request' ? ['application-traffic'] : [])],
+  },
+
+  watchers: {
+    request: {
+      /**
+       * Disable this when HTTP traffic is already observed elsewhere and request entries would
+       * only duplicate that signal.
+       */
+      enabled: true,
+
+      /**
+       * Lower this to surface latency earlier, or raise it when long-running requests are normal
+       * for the application and should not all receive a `slow` tag.
+       */
+      slowMs: 1_000,
+
+      /**
+       * Disable this when response bodies are too sensitive to retain even after redaction, or
+       * when serialising previews would add unacceptable work to request completion.
+       */
+      captureResponse: true,
+
+      /**
+       * Extract the component name and top-level prop keys from captured Inertia JSON responses.
+       * This never enables response capture by itself.
+       */
+      captureInertia: true,
+
+      /**
+       * Lower this when response previews consume too much storage, or raise it when the useful
+       * part of a large JSON or text response would otherwise be truncated.
+       */
+      responseSizeLimitKb: 64,
+
+      /**
+       * Disable this when session state is too sensitive or noisy to attach to request entries.
+       */
+      captureSession: true,
+
+      /**
+       * Path patterns to skip recording entirely, matched against the request path. A `*`
+       * matches any run of characters, so `/assets/*` drops every compiled asset request.
+       */
+      ignorePaths: [],
+    },
+
+    query: {
+      /**
+       * Disable this when database activity is intentionally observed by another tool or query
+       * volume is not useful to the investigation.
+       */
+      enabled: true,
+
+      /**
+       * Lower this to flag tighter latency regressions, or raise it when expensive queries are
+       * expected and should not dominate the `slow` filter.
+       */
+      slowMs: 100,
+
+      /**
+       * Enable this when bound values must never be retained, even after Periscope's recursive
+       * redaction has removed recognised secrets.
+       */
+      hideBindings: false,
+    },
+
+    exception: {
+      /**
+       * Disable this when the application's exception pipeline already records the same failures
+       * and duplicate entries would obscure the request batch.
+       */
+      enabled: true,
+
+      /**
+       * Use `always` when deployed source is available and production code frames are worth the
+       * file reads, or `never` when source context must not be retained.
+       */
+      captureCodeFrame: 'dev',
+
+      /**
+       * Disable this when a process supervisor owns unhandled failures and recording them here
+       * would duplicate an existing crash report.
+       */
+      captureProcessErrors: true,
+    },
+
+    log: {
+      /**
+       * Disable this when logs already reach an observability system and copying them into request
+       * batches would add noise rather than context.
+       */
+      enabled: true,
+
+      /**
+       * Lower this while investigating verbose application behaviour, or raise it when only the
+       * most severe records deserve storage alongside a batch.
+       */
+      level: 'warn',
+    },
+
+    event: {
+      /**
+       * Disable this when application events carry no useful diagnostic context or are already
+       * captured by another subscriber.
+       */
+      enabled: true,
+
+      /**
+       * Add globs for application event namespaces that are too noisy or sensitive to retain;
+       * Periscope already excludes its own and the framework's infrastructure events.
+       */
+      ignore: [],
+    },
+
+    command: {
+      /**
+       * Disable command capture, or ignore commands that are too noisy for the command timeline.
+       * Periscope's own commands are always ignored.
+       */
+      enabled: true,
+      ignore: [],
+
+      /**
+       * Capture bounded, redacted text rendered by commands without changing terminal output.
+       */
+      captureOutput: true,
+    },
+
+    mail: {
+      /**
+       * Disable this when mail lifecycle details and previews must not be retained.
+       */
+      enabled: true,
+    },
+
+    cache: {
+      /**
+       * Values are excluded by default because cache payloads can be large or sensitive.
+       */
+      enabled: true,
+      captureValues: false,
+    },
+
+    model: {
+      /**
+       * Dirty attributes are excluded by default; enable them when update diffs are useful.
+       */
+      enabled: true,
+      captureDirty: false,
+    },
+
+    gate: {
+      /**
+       * Ignore abilities that are too noisy or carry authorization data you do not want retained.
+       */
+      enabled: true,
+      ignoreAbilities: [],
+    },
+
+    dump: {
+      /**
+       * Disable this to make calls to `dump()` return values without recording them.
+       */
+      enabled: true,
+    },
+
+    view: {
+      /**
+       * Observe Edge template renders. Only the template name, timing, and optionally top-level
+       * data keys are retained; render data values are never read or stored.
+       */
+      enabled: true,
+      captureDataKeys: true,
+    },
+
+    http_client: {
+      /**
+       * Disable this when outbound HTTP traffic is already observed elsewhere.
+       */
+      enabled: true,
+
+      /**
+       * Outbound requests taking at least this many milliseconds receive the exact `slow` tag.
+       */
+      slowMs: 1_000,
+    },
+
+    health_check: {
+      /**
+       * Observe readiness reports produced by HealthChecks.run(). Check messages are bounded and
+       * pass through the configured redaction pipeline.
+       */
+      enabled: true,
+    },
+
+    /**
+     * Transmit broadcasts are opt-in. Payloads remain excluded unless explicitly enabled because
+     * they contain arbitrary application data; captured summaries still pass through redaction.
+     */
+    transmit: {
+      enabled: false,
+      capturePayload: false,
+    },
+
+    /**
+     * Queue infrastructure is adapter-based and opt-in. Import a QueueWatcherAdapter
+     * implementation (for example `BullQueueAdapter`) and add it to `adapters`.
+     */
+    job_schedule: {
+      enabled: false,
+      adapters: [],
+      /**
+       * Capture job payloads and completed results. Disabled by default because both may contain
+       * arbitrary application data.
+       */
+      capturePayload: false,
+    },
+
+    /**
+     * Redis commands are observed through @adonisjs/redis diagnostics channels. Arguments are
+     * excluded by default because positional values often contain secrets.
+     */
+    redis: {
+      enabled: false,
+      captureArguments: false,
+    },
+
+    /**
+     * Session identifiers are stored only as hashes. Values remain excluded unless explicitly
+     * enabled and still pass through Periscope's serializer and redactor.
+     */
+    session: {
+      enabled: false,
+      captureValues: false,
+    },
+  },
+
+  dashboard: {
+    /**
+     * Change this when `/periscope` conflicts with an application route or the dashboard needs to
+     * live beneath a different URL prefix.
+     */
+    path: '/periscope',
+    /**
+     * Deny production and unknown environments until this is replaced with an application-specific
+     * authorization check.
+     */
+    authorize: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+
+    /**
+     * Maximum simultaneous browser connections to the live server-sent event stream.
+     *
+     * Default: 5
+     */
+    sseMaxClients: 5,
+  },
+})

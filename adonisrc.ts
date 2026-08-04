@@ -34,7 +34,8 @@ export default defineConfig({
     () => import('@adonisjs/bouncer/commands'),
     () => import('@adonisjs/cache/commands'),
     () => import('@adonisjs/queue/commands'),
-    () => import('@adonisjs/mail/commands')
+    () => import('@adonisjs/mail/commands'),
+    () => import('@rikology/adonisjs-periscope/commands')
   ],
 
   /*
@@ -49,6 +50,10 @@ export default defineConfig({
   providers: [
     () => import('@adonisjs/core/providers/app_provider'),
     () => import('@adonisjs/core/providers/hash_provider'),
+      {
+            file: () => import('@rikology/adonisjs-periscope/provider'),
+            environment: ['web', 'console', 'test'],
+          },
     {
       file: () => import('@adonisjs/core/providers/repl_provider'),
       environment: ['repl', 'test'],
