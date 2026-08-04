@@ -89,6 +89,7 @@
     "@comark/react": "^0.5.1",
     "@inertiajs/react": "^2.3.17",
     "@tuyau/core": "^1.2.2",
+    "@tuyau/superjson": "^1.0.0",
     "@vinejs/vine": "^4.3.0",
     "better-sqlite3": "^13.0.1",
     "class-variance-authority": "^0.7.1",
