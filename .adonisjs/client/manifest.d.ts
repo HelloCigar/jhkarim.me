@@ -4,6 +4,7 @@
  */
 
 /// <reference path="../../adonisrc.ts" />
+/// <reference path="../../config/ally.ts" />
 /// <reference path="../../config/auth.ts" />
 /// <reference path="../../config/cache.ts" />
 /// <reference path="../../config/drive.ts" />

@@ -29,6 +29,10 @@ router
   .group(() => {
     router.get('login', [controllers.Session, 'create'])
     router.post('login', [controllers.Session, 'store'])
+
+    //oauth
+    router.get('/github/redirect', [controllers.GithubOauths, 'redirect'])
+    router.get('/oauth/github/callback', [controllers.GithubOauths, 'callback'])
   })
   .use(middleware.guest())
 
@@ -38,21 +42,9 @@ router
 router
   .group(() => {
     router.post('logout', [controllers.Session, 'destroy'])
-
     router.get('admin', [controllers.Admin, 'index'])
     router.resource('admin/articles', controllers.Articles).as('articles')
     router.post('admin/uploads', [controllers.Uploads, 'store'])
     router.get('admin/geocode', [controllers.Geocoding, 'search'])
   })
   .use(middleware.auth())
-
-// router.on('/test').render(
-//   'emails/newsletter',
-//   await SendNewsletterService.getData({
-//     articleIds: [3, 4],
-//     email: 'jckarim@up.edu.ph',
-//     subject: 'Newsletter',
-//     intro: 'something intro',
-//     unsubscribeUrl: 'url'
-//   })
-// )

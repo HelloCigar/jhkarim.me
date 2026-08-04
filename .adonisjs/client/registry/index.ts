@@ -60,6 +60,18 @@ const routes = {
     tokens: [{"old":"/login","type":0,"val":"login","end":""}],
     types: placeholder as Registry['session.store']['types'],
   },
+  'github_oauths.redirect': {
+    methods: ["GET","HEAD"],
+    pattern: '/github/redirect',
+    tokens: [{"old":"/github/redirect","type":0,"val":"github","end":""},{"old":"/github/redirect","type":0,"val":"redirect","end":""}],
+    types: placeholder as Registry['github_oauths.redirect']['types'],
+  },
+  'github_oauths.callback': {
+    methods: ["GET","HEAD"],
+    pattern: '/oauth/github/callback',
+    tokens: [{"old":"/oauth/github/callback","type":0,"val":"oauth","end":""},{"old":"/oauth/github/callback","type":0,"val":"github","end":""},{"old":"/oauth/github/callback","type":0,"val":"callback","end":""}],
+    types: placeholder as Registry['github_oauths.callback']['types'],
+  },
   'session.destroy': {
     methods: ["POST"],
     pattern: '/logout',

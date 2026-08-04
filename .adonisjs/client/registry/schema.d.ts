@@ -115,6 +115,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/session_controller').default['store']>>>
     }
   }
+  'github_oauths.redirect': {
+    methods: ["GET","HEAD"]
+    pattern: '/github/redirect'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/github_oauths_controller').default['redirect']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/github_oauths_controller').default['redirect']>>>
+    }
+  }
+  'github_oauths.callback': {
+    methods: ["GET","HEAD"]
+    pattern: '/oauth/github/callback'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/github_oauths_controller').default['callback']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/github_oauths_controller').default['callback']>>>
+    }
+  }
   'session.destroy': {
     methods: ["POST"]
     pattern: '/logout'

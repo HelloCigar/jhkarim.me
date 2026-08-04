@@ -34,7 +34,7 @@ export default defineConfig({
     () => import('@adonisjs/bouncer/commands'),
     () => import('@adonisjs/cache/commands'),
     () => import('@adonisjs/queue/commands'),
-    () => import('@adonisjs/mail/commands')
+    () => import('@adonisjs/mail/commands'),
   ],
 
   /*
@@ -69,7 +69,8 @@ export default defineConfig({
     () => import('@adonisjs/cache/cache_provider'),
     () => import('@adonisjs/redis/redis_provider'),
     () => import('@adonisjs/queue/queue_provider'),
-    () => import('@adonisjs/mail/mail_provider')
+    () => import('@adonisjs/mail/mail_provider'),
+    () => import('@adonisjs/ally/ally_provider')
   ],
 
   /*
@@ -87,7 +88,7 @@ export default defineConfig({
     {
       file: () => import('#start/scheduler'),
       environment: ['web'],
-    }
+    },
   ],
 
   /*

@@ -25,6 +25,10 @@ export interface ApiDefinition {
     store: typeof routes['session.store']
     destroy: typeof routes['session.destroy']
   }
+  githubOauths: {
+    redirect: typeof routes['github_oauths.redirect']
+    callback: typeof routes['github_oauths.callback']
+  }
   admin: {
     index: typeof routes['admin.index']
   }

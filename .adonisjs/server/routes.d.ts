@@ -13,6 +13,8 @@ export type ScannedRoutes = {
     'send_newsletters.unsubscribe': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.create': { paramsTuple?: []; params?: {} }
     'session.store': { paramsTuple?: []; params?: {} }
+    'github_oauths.redirect': { paramsTuple?: []; params?: {} }
+    'github_oauths.callback': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }
     'admin.index': { paramsTuple?: []; params?: {} }
     'articles.index': { paramsTuple?: []; params?: {} }
@@ -34,6 +36,8 @@ export type ScannedRoutes = {
     'send_newsletters.subscribe': { paramsTuple?: []; params?: {} }
     'send_newsletters.unsubscribe': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.create': { paramsTuple?: []; params?: {} }
+    'github_oauths.redirect': { paramsTuple?: []; params?: {} }
+    'github_oauths.callback': { paramsTuple?: []; params?: {} }
     'admin.index': { paramsTuple?: []; params?: {} }
     'articles.index': { paramsTuple?: []; params?: {} }
     'articles.create': { paramsTuple?: []; params?: {} }
@@ -50,6 +54,8 @@ export type ScannedRoutes = {
     'send_newsletters.subscribe': { paramsTuple?: []; params?: {} }
     'send_newsletters.unsubscribe': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.create': { paramsTuple?: []; params?: {} }
+    'github_oauths.redirect': { paramsTuple?: []; params?: {} }
+    'github_oauths.callback': { paramsTuple?: []; params?: {} }
     'admin.index': { paramsTuple?: []; params?: {} }
     'articles.index': { paramsTuple?: []; params?: {} }
     'articles.create': { paramsTuple?: []; params?: {} }

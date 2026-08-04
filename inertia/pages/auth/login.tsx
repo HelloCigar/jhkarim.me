@@ -5,6 +5,7 @@ import { Button } from '~/components/ui/button'
 import { Card, CardDescription, CardHeader, CardTitle, CardPanel } from '~/components/ui/card'
 import { Field, FieldError, FieldLabel } from '~/components/ui/field'
 import { Head } from '@inertiajs/react';
+import { Link } from '@adonisjs/inertia/react';
 
 export default function Login() {
   return (
@@ -32,6 +33,12 @@ export default function Login() {
 
               <Button className="w-full mt-4" disabled={processing} type="submit">
                 Login
+              </Button>
+
+              <Button className="w-full mt-4" disabled={processing} type="submit">
+                <Link route="github_oauths.redirect">
+                  Github
+                </Link>
               </Button>
             </div>
           )}

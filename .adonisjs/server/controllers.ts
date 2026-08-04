@@ -11,4 +11,5 @@ export const controllers = {
   SendNewsletters: () => import('#controllers/send_newsletters_controller'),
   Session: () => import('#controllers/session_controller'),
   Uploads: () => import('#controllers/uploads_controller'),
+  GithubOauths: () => import('#controllers/github_oauths_controller'),
 }
